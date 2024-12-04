@@ -1,5 +1,7 @@
 import { Box, HStack, Image, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { getBands } from '../api';
+import { useQuery } from '@tanstack/react-query';
 
 interface IBand {
   name: string;
@@ -19,22 +21,14 @@ interface IGenre {
 }
 
 export default function Home() {
-  const [isLoading, setIsloading] = useState(true);
-  const [bands, setBands] = useState<IBand[]>([]);
-  const fetchBands = async () => {
-    const response = await fetch('http://127.0.0.1:8000/api/v1/bands/');
-    const json = await response.json();
-    setBands(json);
-    setIsloading(false);
-  };
-
-  useEffect(() => {
-    fetchBands();
-  }, []);
+  const { data, isLoading } = useQuery<IBand[]>({
+    queryKey: ['bands'],
+    queryFn: getBands,
+  });
 
   return (
     <HStack p={30} gap={5}>
-      {bands?.map((band) => (
+      {data?.map((band) => (
         <VStack alignItems={'flex-start'} w={600} wrap={'wrap'}>
           <Text fontSize={20}>{band?.name}</Text>
           <Box>
