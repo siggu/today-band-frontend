@@ -1,8 +1,8 @@
 ## SET UP
 
-- [ ] create-react-app
-- [ ] chakraUI 설치
-- [ ] react-router-dom 설치
+- [x] create-react-app
+- [x] chakraUI 설치
+- [x] react-router-dom 설치
 
 <br>
 
