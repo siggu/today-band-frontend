@@ -1,5 +1,4 @@
 import { Box, HStack, Image, Text, VStack } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { getBands } from '../api';
 import { useQuery } from '@tanstack/react-query';
 
