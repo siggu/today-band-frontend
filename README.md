@@ -5,6 +5,7 @@
 - [x] react-router-dom 설치
   - [x] router 설정
 - [x] react-icons 설치
+- [x] react-query 설치
 
 <br>
 
