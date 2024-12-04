@@ -11,6 +11,8 @@ import {
 import { AccordionItem, AccordionItemContent, AccordionItemTrigger, AccordionRoot } from './ui/accordion';
 import { HStack, Box, Text } from '@chakra-ui/react'; // Chakra UI 요소
 import { useState } from 'react';
+import { useColorMode } from './ui/color-mode';
+import { MdDarkMode } from 'react-icons/md';
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -21,8 +23,14 @@ export default function Header() {
     { value: '3', title: '다', text: '다밴드' },
   ];
 
+  const { toggleColorMode } = useColorMode(); // 다크모드 토글
+
   return (
-    <HStack justifyContent='space-between' padding='16px' alignItems='center'>
+    <HStack justifyContent='space-between' padding='30px' alignItems='center'>
+      <Button size={'sm'} onClick={toggleColorMode} rounded={5}>
+        <MdDarkMode />
+      </Button>
+
       <Box flex='1' textAlign='center'>
         <Text fontSize='30px' fontWeight='bold'>
           오늘의 밴드
