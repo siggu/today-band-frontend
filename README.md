@@ -3,6 +3,7 @@
 - [x] create-react-app
 - [x] chakraUI 설치
 - [x] react-router-dom 설치
+  - [x] router 설정
 
 <br>
 
