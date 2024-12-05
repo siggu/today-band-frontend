@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, HStack, Image, Link, Text, VStack } from '@chakra-ui/react';
+import { AccordionItemTrigger, Box, HStack, Image, Link, List, PopoverTrigger, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { LuExternalLink } from 'react-icons/lu';
 import { IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
 import { IoPauseSharp, IoPlaySharp } from 'react-icons/io5';
+import { IoList } from 'react-icons/io5';
+import { AiFillSound } from 'react-icons/ai';
 import { getBands } from '../api';
+import { Slider } from '../components/ui/slider';
+import { PopoverBody, PopoverContent, PopoverRoot } from '../components/ui/popover';
+import { AccordionItem, AccordionRoot } from '../components/ui/accordion';
 
 interface IBand {
   id: number;
@@ -32,6 +37,7 @@ export default function Home() {
     queryFn: getBands,
   });
 
+  const initialVolume = [50];
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [rotation, setRotation] = useState(0);
@@ -40,7 +46,7 @@ export default function Home() {
   const [images, setImages] = useState<string[]>([]);
   const [isImageChanging, setIsImageChanging] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('left');
-
+  const [volume, setVolume] = useState(initialVolume);
   const rotationInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -137,6 +143,18 @@ export default function Home() {
     }, 0);
   };
 
+  const selectSong = (index: number) => {
+    setCurrentSongIndex(index);
+    if (audio) {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        playAudio();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   useEffect(() => {
     const songName = songs[currentSongIndex]?.trim();
     if (songName) {
@@ -178,6 +196,13 @@ export default function Home() {
   }
 
   const bandForToday = data[getIndexForToday(data.length)];
+
+  const onVolumeChange = (value: any) => {
+    if (audio) {
+      audio.volume = value / 100;
+      console.log(audio.volume);
+    }
+  };
 
   return (
     <>
@@ -224,7 +249,7 @@ export default function Home() {
         <Text style={{ transition: 'transform 0.3s ease, opacity 0.3s ease' }} mb={5} fontSize={20}>
           {songs[currentSongIndex]}
         </Text>
-        <Box position='relative' w={400} h={400} mb={5} overflow='hidden'>
+        <Box position='relative' w={400} h={400} mb={20} overflow='hidden'>
           {images.map((image, index) => (
             <Image
               key={index}
@@ -248,12 +273,49 @@ export default function Home() {
             />
           ))}
         </Box>
-        <HStack gap={10} display='flex' justifyContent='center' alignItems='center'>
+        <HStack gap={28} minW={'700px'} display='flex' justifyContent='center' alignItems='center'>
+          <PopoverRoot unstyled>
+            <PopoverTrigger>
+              <AiFillSound style={{ marginTop: '3px' }} />
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverBody>
+                <Slider
+                  height={'200px'}
+                  orientation={'vertical'}
+                  value={volume}
+                  onValueChange={(e) => onVolumeChange(e.value)}
+                />
+              </PopoverBody>
+            </PopoverContent>
+          </PopoverRoot>
           <IoPlaySkipBackSharp style={{ marginTop: '4px' }} onClick={skipBack} />
           <Box zIndex={0} onClick={togglePlay} mt={1}>
             {isPlaying ? <IoPauseSharp /> : <IoPlaySharp />}
           </Box>
           <IoPlaySkipForwardSharp style={{ marginTop: '4px' }} onClick={skipForward} />
+
+          <PopoverRoot modal={true} positioning={{ placement: 'right-end' }}>
+            <PopoverTrigger>
+              <IoList style={{ marginTop: '4px' }} />
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverBody>
+                <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
+                  노래 리스트
+                </Text>
+                {songs?.map((element, index) => (
+                  <AccordionRoot variant={'plain'} rounded={5}>
+                    <AccordionItem key={index} value={element}>
+                      <AccordionItemTrigger onClick={() => selectSong(index)}>
+                        {index + 1}. {element}
+                      </AccordionItemTrigger>
+                    </AccordionItem>
+                  </AccordionRoot>
+                ))}
+              </PopoverBody>
+            </PopoverContent>
+          </PopoverRoot>
         </HStack>
       </VStack>
     </>
