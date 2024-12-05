@@ -224,7 +224,7 @@ export default function Home() {
       justifyContent={'center'}
       alignItems={'center'}
     >
-      <HStack mb={40} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
+      <HStack gap={10} mt={20} mb={10} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
         <VStack justifyContent={'center'} p={30}>
           <Box>
             <Image h={550} src={bandForToday.photo} alt={bandForToday.name} />
