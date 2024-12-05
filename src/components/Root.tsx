@@ -4,7 +4,17 @@ import Header from './Header';
 
 export default function Root() {
   return (
-    <Box>
+    <Box
+      height='100vh'
+      overflowY='scroll'
+      css={{
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': {
+          display: 'none',
+        },
+      }}
+      p={5}
+    >
       <Header />
       <Outlet />
     </Box>
