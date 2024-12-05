@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AccordionItemTrigger, Box, HStack, Image, Link, List, PopoverTrigger, Text, VStack } from '@chakra-ui/react';
+import {
+  AccordionItemTrigger,
+  Box,
+  Container,
+  HStack,
+  Image,
+  Link,
+  List,
+  PopoverTrigger,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { LuExternalLink } from 'react-icons/lu';
 import { IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
@@ -10,6 +21,7 @@ import { getBands } from '../api';
 import { Slider } from '../components/ui/slider';
 import { PopoverBody, PopoverContent, PopoverRoot } from '../components/ui/popover';
 import { AccordionItem, AccordionRoot } from '../components/ui/accordion';
+import { DialogRoot, DialogTrigger, DialogContent, DialogBody } from '../components/ui/dialog';
 
 interface IBand {
   id: number;
@@ -205,8 +217,14 @@ export default function Home() {
   };
 
   return (
-    <>
-      <HStack mb={70} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
+    <Container
+      maxW={'max-content'}
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
+      <HStack mb={40} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
         <VStack justifyContent={'center'} p={30}>
           <Box>
             <Image h={550} src={bandForToday.photo} alt={bandForToday.name} />
@@ -243,81 +261,122 @@ export default function Home() {
             <Text>멤버:</Text>
             <Text>{bandForToday.members}</Text>
           </HStack>
-        </VStack>
-      </HStack>
-      <VStack mb={20} justifyContent='center' alignItems='center'>
-        <Text style={{ transition: 'transform 0.3s ease, opacity 0.3s ease' }} mb={5} fontSize={20}>
-          {songs[currentSongIndex]}
-        </Text>
-        <Box position='relative' w={400} h={400} mb={20} overflow='hidden'>
-          {images.map((image, index) => (
-            <Image
-              key={index}
-              src={image.trim()}
-              alt={`Song ${index}`}
-              position='absolute'
-              top={0}
-              left={0}
-              w='100%'
-              h='100%'
-              objectFit='cover'
-              borderRadius='50%'
-              style={{
-                transform: `
+          <DialogRoot
+            onExitComplete={() => {
+              if (audio) {
+                audio.pause();
+                setIsPlaying(false);
+              }
+            }}
+            placement={'center'}
+            size='lg'
+            motionPreset='slide-in-bottom'
+          >
+            <DialogTrigger>
+              <Text>대표곡 듣기</Text>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogBody p={0} m={0}>
+                <VStack p={20} maxW={'700px'} position={'relative'}>
+                  {/* 블러 처리된 배경 이미지 */}
+                  <Box
+                    position='absolute'
+                    top={0}
+                    left={0}
+                    width='100%'
+                    height='100%'
+                    backgroundImage={`url(${images[currentSongIndex]?.trim()})`}
+                    backgroundSize='cover'
+                    backgroundPosition='center'
+                    filter='blur(10px)'
+                    zIndex={-1}
+                  />
+
+                  {/* 턴 테이블 */}
+                  <Box position='relative' w={300} h={300} mb={10} overflow='hidden'>
+                    {images.map((image, index) => (
+                      <Image
+                        key={index}
+                        src={image.trim()}
+                        alt={`Song ${index}`}
+                        position='absolute'
+                        top={0}
+                        left={0}
+                        w='100%'
+                        h='100%'
+                        objectFit='cover'
+                        borderRadius='50%'
+                        style={{
+                          transform: `
           translateX(${index === currentSongIndex ? 0 : slideDirection === 'left' ? '30%' : '-30%'})
           rotate(${index === currentSongIndex ? rotation : 20}deg)`,
-                opacity: index === currentSongIndex ? 1 : 0,
-                zIndex: index === currentSongIndex ? 2 : 1,
-                transition: 'transform 0.3s ease, opacity 0.3s ease',
-              }}
-            />
-          ))}
-        </Box>
-        <HStack gap={28} minW={'700px'} display='flex' justifyContent='center' alignItems='center'>
-          <PopoverRoot unstyled>
-            <PopoverTrigger>
-              <AiFillSound style={{ marginTop: '3px' }} />
-            </PopoverTrigger>
-            <PopoverContent>
-              <PopoverBody>
-                <Slider
-                  height={'200px'}
-                  orientation={'vertical'}
-                  value={volume}
-                  onValueChange={(e) => onVolumeChange(e.value)}
-                />
-              </PopoverBody>
-            </PopoverContent>
-          </PopoverRoot>
-          <IoPlaySkipBackSharp style={{ marginTop: '4px' }} onClick={skipBack} />
-          <Box zIndex={0} onClick={togglePlay} mt={1}>
-            {isPlaying ? <IoPauseSharp /> : <IoPlaySharp />}
-          </Box>
-          <IoPlaySkipForwardSharp style={{ marginTop: '4px' }} onClick={skipForward} />
+                          opacity: index === currentSongIndex ? 1 : 0,
+                          zIndex: index === currentSongIndex ? 2 : 1,
+                          transition: 'transform 0.3s ease, opacity 0.3s ease',
+                        }}
+                      />
+                    ))}
+                  </Box>
 
-          <PopoverRoot modal={true} positioning={{ placement: 'right-end' }}>
-            <PopoverTrigger>
-              <IoList style={{ marginTop: '4px' }} />
-            </PopoverTrigger>
-            <PopoverContent>
-              <PopoverBody>
-                <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
-                  노래 리스트
-                </Text>
-                {songs?.map((element, index) => (
-                  <AccordionRoot variant={'plain'} rounded={5}>
-                    <AccordionItem key={index} value={element}>
-                      <AccordionItemTrigger onClick={() => selectSong(index)}>
-                        {index + 1}. {element}
-                      </AccordionItemTrigger>
-                    </AccordionItem>
-                  </AccordionRoot>
-                ))}
-              </PopoverBody>
-            </PopoverContent>
-          </PopoverRoot>
-        </HStack>
-      </VStack>
-    </>
+                  {/* 노래 제목 */}
+                  <Text style={{ transition: 'transform 0.3s ease, opacity 0.3s ease' }} mb={10} fontSize={20}>
+                    {songs[currentSongIndex]}
+                  </Text>
+
+                  {/* 재생 컨트롤 */}
+                  <Box>
+                    <HStack gap={28}>
+                      <PopoverRoot unstyled positioning={{ placement: 'top' }}>
+                        <PopoverTrigger>
+                          <AiFillSound style={{ marginTop: '3px' }} />
+                        </PopoverTrigger>
+                        <PopoverContent zIndex={1500}>
+                          <PopoverBody>
+                            <Slider
+                              height={'100px'}
+                              orientation={'vertical'}
+                              value={volume}
+                              onValueChange={(e) => onVolumeChange(e.value)}
+                            />
+                          </PopoverBody>
+                        </PopoverContent>
+                      </PopoverRoot>
+                      <IoPlaySkipBackSharp style={{ marginTop: '4px' }} onClick={skipBack} />
+                      <Box zIndex={0} onClick={togglePlay} mt={1}>
+                        {isPlaying ? <IoPauseSharp /> : <IoPlaySharp />}
+                      </Box>
+                      <IoPlaySkipForwardSharp style={{ marginTop: '4px' }} onClick={skipForward} />
+                      <PopoverRoot modal={true} positioning={{ placement: 'right-end' }}>
+                        <PopoverTrigger>
+                          <IoList style={{ marginTop: '4px' }} />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverBody>
+                            <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
+                              노래 리스트
+                            </Text>
+                            {songs?.map((element, index) => (
+                              <AccordionRoot variant={'plain'} rounded={5}>
+                                <AccordionItem key={index} value={element}>
+                                  <AccordionItemTrigger onClick={() => selectSong(index)}>
+                                    {index + 1}. {element}
+                                  </AccordionItemTrigger>
+                                </AccordionItem>
+                              </AccordionRoot>
+                            ))}
+                          </PopoverBody>
+                        </PopoverContent>
+                      </PopoverRoot>
+                    </HStack>
+                  </Box>
+                </VStack>
+              </DialogBody>
+            </DialogContent>
+          </DialogRoot>
+        </VStack>
+      </HStack>
+
+      {/* 원래 턴테이블 자리 */}
+    </Container>
   );
 }
