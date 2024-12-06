@@ -1,16 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  AccordionItemTrigger,
-  Box,
-  Container,
-  HStack,
-  Image,
-  Link,
-  List,
-  PopoverTrigger,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Container, HStack, Image, Link, PopoverTrigger, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { LuExternalLink } from 'react-icons/lu';
 import { IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
@@ -20,8 +9,10 @@ import { AiFillSound } from 'react-icons/ai';
 import { getBands } from '../api';
 import { Slider } from '../components/ui/slider';
 import { PopoverBody, PopoverContent, PopoverRoot } from '../components/ui/popover';
-import { AccordionItem, AccordionRoot } from '../components/ui/accordion';
 import { DialogRoot, DialogTrigger, DialogContent, DialogBody } from '../components/ui/dialog';
+import { IoPerson } from 'react-icons/io5';
+import { BsMusicPlayerFill } from 'react-icons/bs';
+import { FaGuitar } from 'react-icons/fa';
 
 interface IBand {
   id: number;
@@ -87,65 +78,45 @@ export default function Home() {
   };
 
   const togglePlay = async () => {
-    const songName = songs[currentSongIndex]?.trim();
-
-    // 오디오가 초기화되지 않은 경우 초기화
-    if (!audio && songName) {
-      const newAudio = new Audio(`/songs/${songName}.mp3`);
-      setAudio(newAudio);
-      setIsPlaying(true);
-
-      try {
-        await newAudio.play(); // 오디오 재생
-      } catch (error) {
-        console.error('Error playing audio:', error);
-      }
-      return;
+    if (!audio && songs[currentSongIndex]?.trim()) {
+      initializeAudio(songs[currentSongIndex].trim());
     }
 
-    // 오디오가 초기화된 경우 재생/일시정지
     if (audio) {
       if (isPlaying) {
         audio.pause();
+        setIsPlaying(false);
       } else {
         try {
-          await audio.play(); // 오디오 재생
+          await audio.play();
+          setIsPlaying(true);
         } catch (error) {
           console.error('Error playing audio:', error);
         }
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
   const skipBack = () => {
-    if (audio) {
-      if (isPlaying) {
-        audio.pause();
-      } else {
-        playAudio();
-      }
-      setIsPlaying(!isPlaying);
-    }
     setIsImageChanging(true);
     setTimeout(() => {
       setSlideDirection('left');
-
       const newIndex = currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
       setCurrentSongIndex(newIndex);
       setIsImageChanging(false);
     }, 0);
+
+    if (audio) {
+      const songName = songs[currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1]?.trim();
+      initializeAudio(songName);
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error('Error playing audio:', error));
+    }
   };
 
   const skipForward = () => {
-    if (audio) {
-      if (isPlaying) {
-        audio.pause();
-      } else {
-        playAudio();
-      }
-      setIsPlaying(!isPlaying);
-    }
     setIsImageChanging(true);
     setTimeout(() => {
       setSlideDirection('right');
@@ -153,6 +124,15 @@ export default function Home() {
       setCurrentSongIndex(newIndex);
       setIsImageChanging(false);
     }, 0);
+
+    if (audio) {
+      const songName = songs[currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1]?.trim();
+      initializeAudio(songName);
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error('Error playing audio:', error));
+    }
   };
 
   const selectSong = (index: number) => {
@@ -192,6 +172,19 @@ export default function Home() {
       }
     };
   }, [isPlaying, audio]);
+
+  useEffect(() => {
+    if (audio) {
+      const handleSongEnd = () => {
+        skipForward();
+      };
+      audio.addEventListener('ended', handleSongEnd);
+
+      return () => {
+        audio.removeEventListener('ended', handleSongEnd);
+      };
+    }
+  }, [audio, skipForward]);
 
   const getIndexForToday = (max: number) => {
     const today = new Date().toISOString().split('T')[0];
@@ -233,22 +226,15 @@ export default function Home() {
         <VStack gap={5} justifyContent={'center'} alignItems={'flex-start'} p={30}>
           <HStack mb={5}>
             <Link href={`bands/${bandForToday.id}`}>
-              <HStack>
+              <HStack p={2}>
                 <Text fontSize={25}>{`${bandForToday.name}`}</Text>
                 <LuExternalLink />
               </HStack>
             </Link>
           </HStack>
-          <HStack>
-            <Text>결성일:</Text>
-            <Text>{bandForToday.formation_date}</Text>
-          </HStack>
-          <HStack>
-            <Text>데뷔일:</Text>
-            <Text>{bandForToday.debut_date}</Text>
-          </HStack>
+
           <HStack wrap={'wrap'}>
-            <Text>장르:</Text>
+            <FaGuitar size={'22'} />
             {bandForToday.genre.map((genre, index) =>
               index + 1 < bandForToday.genre.length ? (
                 <Text key={genre.id}>{genre.name}, </Text>
@@ -258,7 +244,7 @@ export default function Home() {
             )}
           </HStack>
           <HStack>
-            <Text>멤버:</Text>
+            <IoPerson size={'20'} />
             <Text>{bandForToday.members}</Text>
           </HStack>
           <DialogRoot
@@ -273,7 +259,10 @@ export default function Home() {
             motionPreset='slide-in-bottom'
           >
             <DialogTrigger>
-              <Text>대표곡 듣기</Text>
+              <HStack>
+                <BsMusicPlayerFill size={'20'} />
+                <Text>노래 듣기</Text>
+              </HStack>
             </DialogTrigger>
             <DialogContent>
               <DialogBody p={0} m={0}>
@@ -285,7 +274,9 @@ export default function Home() {
                     left={0}
                     width='100%'
                     height='100%'
-                    backgroundImage={`url(${images[currentSongIndex]?.trim()})`}
+                    backgroundImage={`linear-gradient(rgba(128, 128, 128, 0.1), rgba(128, 128, 128, 0.5)), url(${images[
+                      currentSongIndex
+                    ]?.trim()})`}
                     backgroundSize='cover'
                     backgroundPosition='center'
                     filter='blur(10px)'
@@ -319,12 +310,17 @@ export default function Home() {
                   </Box>
 
                   {/* 노래 제목 */}
-                  <Text style={{ transition: 'transform 0.3s ease, opacity 0.3s ease' }} mb={10} fontSize={20}>
+                  <Text
+                    color={'white'}
+                    style={{ transition: 'transform 0.3s ease, opacity 0.3s ease' }}
+                    mb={10}
+                    fontSize={20}
+                  >
                     {songs[currentSongIndex]}
                   </Text>
 
                   {/* 재생 컨트롤 */}
-                  <Box>
+                  <Box color={'white'}>
                     <HStack gap={28}>
                       <PopoverRoot unstyled positioning={{ placement: 'top' }}>
                         <PopoverTrigger>
@@ -356,13 +352,16 @@ export default function Home() {
                               노래 리스트
                             </Text>
                             {songs?.map((element, index) => (
-                              <AccordionRoot variant={'plain'} rounded={5}>
-                                <AccordionItem key={index} value={element}>
-                                  <AccordionItemTrigger onClick={() => selectSong(index)}>
-                                    {index + 1}. {element}
-                                  </AccordionItemTrigger>
-                                </AccordionItem>
-                              </AccordionRoot>
+                              <Box
+                                p={2}
+                                _hover={{ backgroundColor: { base: 'gray.200', _dark: 'gray.800' } }}
+                                textStyle={'md'}
+                                onClick={() => selectSong(index)}
+                              >
+                                <Text>
+                                  {index + 1}. {element}
+                                </Text>
+                              </Box>
                             ))}
                           </PopoverBody>
                         </PopoverContent>
