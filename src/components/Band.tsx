@@ -15,6 +15,8 @@ interface IBand {
   debut_date: string;
   genre: IGenre[];
   members: string;
+  member_photos: string;
+  member_info: string;
   hit_songs: string;
   music_photo: string;
   introduction: string;
@@ -45,6 +47,9 @@ export default function Band() {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('left');
   const [volume, setVolume] = useState(initialVolume);
   const rotationInterval = useRef<NodeJS.Timeout | null>(null);
+  const members = data?.members.split(',');
+  const members_photos = data?.member_photos.split(',');
+  const member_info = data?.member_info.split('/');
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -196,17 +201,19 @@ export default function Band() {
     <Container pt={50}>
       <HStack display={'flex'} wrap={'wrap'} justifyContent={'space-around'} alignItems={'center'}>
         <VStack m={10} gap={3} alignItems={'flex-start'} w={500} wrap={'wrap'}>
-          <Text fontSize={20}>{data?.name}</Text>
+          <Text fontSize={30}>{data?.name}</Text>
           <Box>
             <Image src={`${data?.photo}`}></Image>
           </Box>
           <Box p={5} layerStyle={'fill.surface'}>
             <Text fontWeight={'extrabold'}>{data?.introduction}</Text>
           </Box>
-          <HStack>
-            <Text>결성일:</Text>
-            <Text>{data?.formation_date}</Text>
-          </HStack>
+          {data?.formation_date === '-' ? null : (
+            <HStack>
+              <Text>결성일:</Text>
+              <Text>{data?.formation_date}</Text>
+            </HStack>
+          )}
           <HStack>
             <Text>데뷔일:</Text>
             <Text>{data?.debut_date}</Text>
@@ -219,21 +226,16 @@ export default function Band() {
           </HStack>
           <HStack>
             <Text>멤버:</Text>
-            <Text>{data?.members}</Text>
+            {members?.map((member, index) =>
+              index + 1 < members.length ? <Text key={index}>{member}, </Text> : <Text key={index}>{member}</Text>
+            )}
           </HStack>
-          <HStack>
-            <Text>대표곡:</Text>
-          </HStack>
-          <HStack>
-            <Text>앨범:</Text>
-            <Text>{data?.albums}</Text>
-          </HStack>
-          <HStack>
-            <Text>수상:</Text>
+          <HStack textWrap={'wrap'}>
+            <Text whiteSpace='nowrap'>수상:</Text>
             <Text>{data?.awards}</Text>
           </HStack>
         </VStack>
-        <VStack m={10} p={10} position={'relative'}>
+        <VStack p={12} m={5} position={'relative'}>
           {/* 블러 처리된 배경 이미지 */}
           <Box
             position='absolute'
@@ -338,6 +340,22 @@ export default function Band() {
             </HStack>
           </Box>
         </VStack>
+      </HStack>
+      <Box mx={10}>
+        <Text fontWeight={'extrabold'} fontSize={22}>
+          멤버
+        </Text>
+      </Box>
+      <HStack wrap={'wrap'} m={10} mt={5} justifyContent={'space-between'} alignItems={'start'}>
+        {members_photos?.map((photo, index) => (
+          <Box w={250}>
+            <Image rounded={5} src={photo} />
+            <Text fontWeight={'bold'} py={2}>
+              {members![index]}
+            </Text>
+            <Text>{member_info![index]}</Text>
+          </Box>
+        ))}
       </HStack>
     </Container>
   );
