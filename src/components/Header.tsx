@@ -15,7 +15,7 @@ import { useColorMode } from './ui/color-mode';
 import { MdDarkMode } from 'react-icons/md';
 import { useQuery } from '@tanstack/react-query';
 import { getBands } from '../api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { data, isLoading } = useQuery({
@@ -25,6 +25,11 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   const { toggleColorMode } = useColorMode(); // 다크모드 토글
+
+  const refreshPage = (url: string) => {
+    window.location.href = url;
+  };
+  const navigate = useNavigate(); // useNavigate hook 사용
 
   const classifications = [
     { code: 'ga', title: '가' },
@@ -50,11 +55,11 @@ export default function Header() {
       </Button>
 
       <Box flex='1' textAlign='center'>
-        <Link to={'/'}>
+        <Box onClick={() => refreshPage(`/`)}>
           <Text fontSize='30px' fontWeight='bold'>
             오늘의 밴드
           </Text>
-        </Link>
+        </Box>
       </Box>
 
       <Box justifyContent={'center'} alignItems={'center'}>
@@ -78,9 +83,9 @@ export default function Header() {
                           .filter((band: any) => band.classification === cls.code)
                           .map((band: any) => (
                             <Box key={band.id} marginBottom={4}>
-                              <Link to={`bands/${band.id}`}>
+                              <Box onClick={() => refreshPage(`/bands/${band.id}`)}>
                                 <Text fontWeight={'bold'}>{band.name}</Text>
-                              </Link>
+                              </Box>
                             </Box>
                           ))
                       )}
