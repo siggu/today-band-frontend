@@ -352,16 +352,23 @@ export default function Home() {
                               노래 리스트
                             </Text>
                             {songs?.map((element, index) => (
-                              <Box
+                              <HStack
                                 p={2}
-                                _hover={{ backgroundColor: { base: 'gray.200', _dark: 'gray.800' } }}
+                                _hover={{
+                                  backgroundColor: { base: 'gray.200', _dark: 'gray.800' },
+                                  borderRadius: 'md',
+                                }}
                                 textStyle={'md'}
                                 onClick={() => selectSong(index)}
                               >
-                                <Text>
-                                  {index + 1}. {element}
-                                </Text>
-                              </Box>
+                                <Image rounded={5} w={45} src={images[index]} />
+                                <VStack gap={0} alignItems={'flex-start'}>
+                                  <Text>{element}</Text>
+                                  <Text color={'gray.600'} fontSize={11}>
+                                    {bandForToday?.name}
+                                  </Text>
+                                </VStack>
+                              </HStack>
                             ))}
                           </PopoverBody>
                         </PopoverContent>
