@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Container, HStack, Image, Link, PopoverTrigger, Text, VStack } from '@chakra-ui/react';
+import { Box, Container, Group, HStack, Image, Link, PopoverTrigger, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { LuExternalLink } from 'react-icons/lu';
 import { IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
@@ -8,11 +8,12 @@ import { IoList } from 'react-icons/io5';
 import { AiFillSound } from 'react-icons/ai';
 import { getBands } from '../api';
 import { Slider } from '../components/ui/slider';
-import { PopoverBody, PopoverContent, PopoverRoot } from '../components/ui/popover';
+import { PopoverBody, PopoverContent, PopoverFooter, PopoverRoot } from '../components/ui/popover';
 import { DialogRoot, DialogTrigger, DialogContent, DialogBody } from '../components/ui/dialog';
 import { IoPerson } from 'react-icons/io5';
-import { BsMusicPlayerFill } from 'react-icons/bs';
+import { BsMusicNote, BsMusicPlayerFill } from 'react-icons/bs';
 import { FaGuitar } from 'react-icons/fa';
+import { Button } from '../components/ui/button';
 
 interface IBand {
   id: number;
@@ -51,6 +52,12 @@ export default function Home() {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('left');
   const [volume, setVolume] = useState(initialVolume);
   const rotationInterval = useRef<NodeJS.Timeout | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const songsPerPage = 5;
+  const startIndex = currentPage * songsPerPage;
+  const endIndex = startIndex + songsPerPage;
+  const paginatedSongs = songs.slice(startIndex, endIndex);
+  const paginatedImages = images.slice(startIndex, endIndex);
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -201,11 +208,23 @@ export default function Home() {
   }
 
   const bandForToday = data[getIndexForToday(data.length)];
+  const band_photo = bandForToday.photo.split(',');
 
   const onVolumeChange = (value: any) => {
     if (audio) {
       audio.volume = value / 100;
-      console.log(audio.volume);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if ((currentPage + 1) * songsPerPage < songs.length) {
+      setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
@@ -220,14 +239,14 @@ export default function Home() {
       <HStack gap={10} mt={20} mb={10} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
         <VStack justifyContent={'center'} p={30}>
           <Box>
-            <Image h={550} src={bandForToday.photo} alt={bandForToday.name} />
+            <Image h={550} src={band_photo[0]} alt={bandForToday.name} />
           </Box>
         </VStack>
         <VStack gap={5} justifyContent={'center'} alignItems={'flex-start'} p={30}>
           <HStack mb={5}>
             <Link href={`bands/${bandForToday.id}`}>
-              <HStack p={2}>
-                <Text fontSize={25}>{`${bandForToday.name}`}</Text>
+              <HStack py={2}>
+                <Text fontWeight={'black'} color={'#4882D9'} fontSize={25}>{`${bandForToday.name}`}</Text>
                 <LuExternalLink />
               </HStack>
             </Link>
@@ -351,26 +370,56 @@ export default function Home() {
                             <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
                               노래 리스트
                             </Text>
-                            {songs?.map((element, index) => (
-                              <HStack
-                                p={2}
-                                _hover={{
-                                  backgroundColor: { base: 'gray.200', _dark: 'gray.800' },
-                                  borderRadius: 'md',
-                                }}
-                                textStyle={'md'}
-                                onClick={() => selectSong(index)}
-                              >
-                                <Image rounded={5} w={45} src={images[index]} />
-                                <VStack gap={0} alignItems={'flex-start'}>
-                                  <Text>{element}</Text>
-                                  <Text color={'gray.600'} fontSize={11}>
-                                    {bandForToday?.name}
-                                  </Text>
-                                </VStack>
-                              </HStack>
-                            ))}
+                            {paginatedSongs.map((element, index) => {
+                              const songIndex = startIndex + index; // 실제 곡 인덱스
+                              return (
+                                <HStack
+                                  key={index}
+                                  p={2}
+                                  _hover={{
+                                    backgroundColor: { base: 'gray.200', _dark: 'gray.800' },
+                                    borderRadius: 'md',
+                                  }}
+                                  textStyle={'md'}
+                                  onClick={() => selectSong(songIndex)}
+                                >
+                                  <Image rounded={5} w={45} src={paginatedImages[index]} />
+                                  {songIndex === currentSongIndex && isPlaying && (
+                                    <Box color={'#4882D9'} ml={3.5} position={'absolute'}>
+                                      <BsMusicNote />
+                                    </Box>
+                                  )}
+                                  <VStack gap={0} alignItems={'flex-start'}>
+                                    <HStack>
+                                      {songIndex === currentSongIndex && isPlaying ? (
+                                        <Text color={'#4882D9'}>{element}</Text>
+                                      ) : (
+                                        <Text>{element}</Text>
+                                      )}
+                                    </HStack>
+                                    <Text color={'gray.600'} fontSize={11}>
+                                      {bandForToday.name}
+                                    </Text>
+                                  </VStack>
+                                </HStack>
+                              );
+                            })}
                           </PopoverBody>
+
+                          <PopoverFooter>
+                            <Group justifyContent={'space-between'}>
+                              <Button size='sm' onClick={handlePrevPage} disabled={currentPage === 0}>
+                                이전
+                              </Button>
+                              <Button
+                                size='sm'
+                                onClick={handleNextPage}
+                                disabled={(currentPage + 1) * songsPerPage >= songs.length}
+                              >
+                                다음
+                              </Button>
+                            </Group>
+                          </PopoverFooter>
                         </PopoverContent>
                       </PopoverRoot>
                     </HStack>

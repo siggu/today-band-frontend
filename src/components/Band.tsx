@@ -1,12 +1,14 @@
-import { HStack, VStack, Box, Text, Image, Container, Grid } from '@chakra-ui/react';
+import { HStack, VStack, Box, Text, Image, Container, Group } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getBand } from '../api';
 import { useParams } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { PopoverBody, PopoverContent, PopoverRoot, PopoverTrigger } from './ui/popover';
+import { PopoverBody, PopoverContent, PopoverFooter, PopoverRoot, PopoverTrigger } from './ui/popover';
 import { AiFillSound } from 'react-icons/ai';
 import { Slider } from './ui/slider';
 import { IoList, IoPauseSharp, IoPlaySharp, IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
+import { Button } from './ui/button';
+import { BsMusicNote } from 'react-icons/bs';
 
 interface IBand {
   name: string;
@@ -46,10 +48,17 @@ export default function Band() {
   const [isImageChanging, setIsImageChanging] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('left');
   const [volume, setVolume] = useState(initialVolume);
+  const [currentPage, setCurrentPage] = useState(0);
+  const songsPerPage = 5;
+  const startIndex = currentPage * songsPerPage;
+  const endIndex = startIndex + songsPerPage;
+  const paginatedSongs = songs.slice(startIndex, endIndex);
+  const paginatedImages = images.slice(startIndex, endIndex);
   const rotationInterval = useRef<NodeJS.Timeout | null>(null);
   const members = data?.members.split(',');
   const members_photos = data?.member_photos.split(',');
   const member_info = data?.member_info.split('/');
+  const band_photo = data?.photo ? data.photo.split(',') : [];
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -197,13 +206,27 @@ export default function Band() {
     }
   };
 
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if ((currentPage + 1) * songsPerPage < songs.length) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
   return (
     <Container pt={50}>
       <HStack display={'flex'} wrap={'wrap'} justifyContent={'space-around'} alignItems={'center'}>
         <VStack m={10} gap={3} alignItems={'flex-start'} w={500} wrap={'wrap'}>
-          <Text fontSize={30}>{data?.name}</Text>
+          <Text color={'#4882D9'} fontSize={30}>
+            {data?.name}
+          </Text>
           <Box>
-            <Image src={`${data?.photo}`}></Image>
+            <Image src={band_photo[1]} alt={data?.name}></Image>
           </Box>
           <Box p={5} layerStyle={'fill.surface'}>
             <Text fontWeight={'extrabold'}>{data?.introduction}</Text>
@@ -322,23 +345,53 @@ export default function Band() {
                     <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
                       노래 리스트
                     </Text>
-                    {songs?.map((element, index) => (
-                      <HStack
-                        p={2}
-                        _hover={{ backgroundColor: { base: 'gray.200', _dark: 'gray.800' }, borderRadius: 'md' }}
-                        textStyle={'md'}
-                        onClick={() => selectSong(index)}
-                      >
-                        <Image rounded={5} w={45} src={images[index]} />
-                        <VStack gap={0} alignItems={'flex-start'}>
-                          <Text>{element}</Text>
-                          <Text color={'gray.600'} fontSize={11}>
-                            {data?.name}
-                          </Text>
-                        </VStack>
-                      </HStack>
-                    ))}
+                    {paginatedSongs.map((element, index) => {
+                      const songIndex = startIndex + index; // 실제 곡 인덱스
+                      return (
+                        <HStack
+                          key={index}
+                          p={2}
+                          _hover={{ backgroundColor: { base: 'gray.200', _dark: 'gray.800' }, borderRadius: 'md' }}
+                          textStyle={'md'}
+                          onClick={() => selectSong(songIndex)}
+                        >
+                          <Image rounded={5} w={45} src={paginatedImages[index]} />
+                          {songIndex === currentSongIndex && isPlaying && (
+                            <Box color={'#4882D9'} ml={3.5} position={'absolute'}>
+                              <BsMusicNote />
+                            </Box>
+                          )}
+                          <VStack gap={0} alignItems={'flex-start'}>
+                            <HStack>
+                              {songIndex === currentSongIndex && isPlaying ? (
+                                <Text color={'#4882D9'}>{element}</Text>
+                              ) : (
+                                <Text>{element}</Text>
+                              )}
+                            </HStack>
+                            <Text color={'gray.600'} fontSize={11}>
+                              {data?.name}
+                            </Text>
+                          </VStack>
+                        </HStack>
+                      );
+                    })}
                   </PopoverBody>
+
+                  <PopoverFooter>
+                    <Group justifyContent={'space-between'}>
+                      <Button size='sm' onClick={handlePrevPage} disabled={currentPage === 0}>
+                        이전
+                      </Button>
+                      <Button
+                        size='sm'
+                        onClick={handleNextPage}
+                        disabled={(currentPage + 1) * songsPerPage >= songs.length}
+                      >
+                        다음
+                      </Button>
+                    </Group>
+                  </PopoverFooter>
                 </PopoverContent>
               </PopoverRoot>
             </HStack>
@@ -346,7 +399,7 @@ export default function Band() {
         </VStack>
       </HStack>
       <Box mx={10}>
-        <Text fontWeight={'extrabold'} fontSize={22}>
+        <Text color={'#4882D9'} fontWeight={'extrabold'} fontSize={22}>
           멤버
         </Text>
       </Box>
