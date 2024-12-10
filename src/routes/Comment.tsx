@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Field } from '../components/ui/field';
-import { Box, Button, Container, HStack, Stack, Text, Textarea, VStack } from '@chakra-ui/react';
+import { Button, Container, HStack, Stack, Text, Textarea, VStack } from '@chakra-ui/react';
 import {
   PaginationItems,
   PaginationNextTrigger,
@@ -9,12 +9,8 @@ import {
 } from '../components/ui/pagination';
 import { getComments, postComments } from '../api';
 import { useState } from 'react';
-import { Toaster, toaster } from '../components/ui/toaster'; // 토스터 알림 라이브러리
-
-interface IComment {
-  detail: string;
-  date: string;
-}
+import { Toaster, toaster } from '../components/ui/toaster';
+import { IComment } from '@/types';
 
 export default function Comment() {
   const {

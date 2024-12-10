@@ -8,26 +8,7 @@ import { IoPerson } from 'react-icons/io5';
 import { BsMusicPlayerFill } from 'react-icons/bs';
 import { FaGuitar } from 'react-icons/fa';
 import { TurnTable } from '../components/TurnTable';
-
-interface IBand {
-  id: number;
-  name: string;
-  photo: string;
-  formation_date: string;
-  debut_date: string;
-  genre: IGenre[];
-  members: string;
-  hit_songs: string;
-  music_links: string;
-  music_photo: string;
-  albums: string;
-  awards: string;
-}
-
-interface IGenre {
-  id: number;
-  name: string;
-}
+import { IBand } from '@/types';
 
 export default function Home() {
   const { data, isLoading } = useQuery<IBand[]>({

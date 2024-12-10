@@ -1,30 +1,10 @@
-import { HStack, VStack, Box, Text, Image, Container, Group } from '@chakra-ui/react';
+import { HStack, VStack, Box, Text, Image, Container } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getBand } from '../api';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { TurnTable } from '../components/TurnTable';
-
-interface IBand {
-  name: string;
-  photo: string;
-  formation_date: string;
-  debut_date: string;
-  genre: IGenre[];
-  members: string;
-  member_photos: string;
-  member_info: string;
-  hit_songs: string;
-  music_photo: string;
-  introduction: string;
-  albums: string;
-  awards: string;
-}
-
-interface IGenre {
-  id: number;
-  name: string;
-}
+import { IBand } from '@/types';
 
 export default function Band() {
   const { bandId } = useParams();
