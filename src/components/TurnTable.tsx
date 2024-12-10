@@ -234,7 +234,7 @@ export function TurnTable({ songs, images, bandName }: TurnTableProps) {
               </PopoverTrigger>
               <PopoverContent>
                 <PopoverBody>
-                  <Text fontWeight={'bold'} mb={3} fontSize={'17px'}>
+                  <Text color={'#4882D9'} fontWeight={'black'} mb={3} fontSize={'18px'}>
                     노래 리스트
                   </Text>
                   {paginatedSongs.map((song, index) => {

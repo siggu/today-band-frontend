@@ -49,9 +49,9 @@ export default function Band() {
 
   return (
     <Container pt={50}>
-      <HStack display={'flex'} wrap={'wrap'} justifyContent={'space-around'} alignItems={'center'}>
-        <VStack m={10} gap={3} alignItems={'flex-start'} w={500} wrap={'wrap'}>
-          <Text color={'#4882D9'} fontSize={30}>
+      <HStack gap={10} display={'flex'} wrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
+        <VStack m={10} mb={20} gap={3} alignItems={'flex-start'} w={450} wrap={'wrap'}>
+          <Text fontWeight={'black'} color={'#4882D9'} fontSize={30}>
             {data?.name}
           </Text>
           <Box>
@@ -87,9 +87,11 @@ export default function Band() {
             <Text>{data?.awards}</Text>
           </HStack>
         </VStack>
-        <TurnTable songs={songs} images={images} bandName={data?.name} />
+        <Box m={10}>
+          <TurnTable songs={songs} images={images} bandName={data?.name} />
+        </Box>
       </HStack>
-      <Box mx={10}>
+      <Box mt={20} mx={10}>
         <Text color={'#4882D9'} fontWeight={'extrabold'} fontSize={22}>
           멤버
         </Text>

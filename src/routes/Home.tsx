@@ -128,8 +128,6 @@ export default function Home() {
           </DialogRoot>
         </VStack>
       </HStack>
-
-      {/* 원래 턴테이블 자리 */}
     </Container>
   );
 }
