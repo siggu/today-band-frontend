@@ -53,6 +53,9 @@ export default function Header() {
       <Button size={'sm'} onClick={toggleColorMode} rounded={5}>
         <MdDarkMode />
       </Button>
+      <Button size={'sm'} onClick={() => refreshPage(`/comments`)}>
+        댓글
+      </Button>
 
       <Box flex='1' textAlign='center'>
         <Box onClick={() => refreshPage(`/`)}>

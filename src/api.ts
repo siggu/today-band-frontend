@@ -11,3 +11,5 @@ export const getBand = ({ queryKey }: QueryFunctionContext) => {
   const [bandId] = queryKey;
   return instance.get(`bands/${bandId}`).then((response) => response.data);
 };
+
+export const getComments = () => instance.get('comments/').then((response) => response.data);
