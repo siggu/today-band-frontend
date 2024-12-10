@@ -7,6 +7,8 @@
 - [x] react-icons 설치
 - [x] react-query 설치
 - [x] axios 설치
+- [x] js-cookie 설치
+  - [x] type 선언
 
 <br>
 
