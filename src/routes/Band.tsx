@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { getBand } from '../api';
 import { useParams } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
-import { PopoverBody, PopoverContent, PopoverFooter, PopoverRoot, PopoverTrigger } from './ui/popover';
+import { PopoverBody, PopoverContent, PopoverFooter, PopoverRoot, PopoverTrigger } from '../components/ui/popover';
 import { AiFillSound } from 'react-icons/ai';
-import { Slider } from './ui/slider';
+import { Slider } from '../components/ui/slider';
 import { IoList, IoPauseSharp, IoPlaySharp, IoPlaySkipBackSharp, IoPlaySkipForwardSharp } from 'react-icons/io5';
-import { Button } from './ui/button';
+import { Button } from '../components/ui/button';
 import { BsMusicNote } from 'react-icons/bs';
 
 interface IBand {
