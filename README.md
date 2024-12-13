@@ -9,8 +9,8 @@
 - [x] axios 설치
 - [x] js-cookie 설치
   - [x] type 선언
-
-<br>
+- [x] react-hook-form 설치
+      <br>
 
 ## 추가할 기능
 
