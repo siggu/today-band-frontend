@@ -9,13 +9,16 @@ import {
   DrawerTrigger,
 } from './ui/drawer';
 import { AccordionItem, AccordionItemContent, AccordionItemTrigger, AccordionRoot } from './ui/accordion';
-import { HStack, Box, Text } from '@chakra-ui/react'; // Chakra UI 요소
+import { HStack, Box, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useColorMode } from './ui/color-mode';
 import { MdDarkMode } from 'react-icons/md';
 import { useQuery } from '@tanstack/react-query';
 import { getBands } from '../api';
 import { Link, useNavigate } from 'react-router-dom';
+import useUser from '../lib/useUser';
+import LoginDialog from './LoginDialog';
+import LogOutDialog from './LogOutDialog';
 
 export default function Header() {
   const { data, isLoading } = useQuery({
@@ -29,7 +32,8 @@ export default function Header() {
   const refreshPage = (url: string) => {
     window.location.href = url;
   };
-  const navigate = useNavigate(); // useNavigate hook 사용
+
+  const { userLoading, isLoggedIn, user } = useUser();
 
   const classifications = [
     { code: 'ga', title: '가' },
@@ -64,6 +68,16 @@ export default function Header() {
           </Text>
         </Box>
       </Box>
+
+      {!userLoading ? (
+        !isLoggedIn ? (
+          <>
+            <LoginDialog />
+          </>
+        ) : (
+          <LogOutDialog />
+        )
+      ) : null}
 
       <Box justifyContent={'center'} alignItems={'center'}>
         <DrawerRoot size={'md'} open={open} onOpenChange={(e: any) => setOpen(e.open)}>

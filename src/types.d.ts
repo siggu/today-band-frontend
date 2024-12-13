@@ -24,3 +24,8 @@ export interface IComment {
   detail: string;
   date: string;
 }
+
+export interface IUsernameLoginVariables {
+  username: string;
+  password: string;
+}
