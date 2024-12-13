@@ -69,13 +69,11 @@ export function TurnTable({ songs, images, bandName }: TurnTableProps) {
   const skipBack = () => {
     const newIndex = currentSongIndex === 0 ? songs.length - 1 : currentSongIndex - 1;
     setCurrentSongIndex(newIndex);
-    setIsPlaying(true);
   };
 
   const skipForward = () => {
     const newIndex = currentSongIndex === songs.length - 1 ? 0 : currentSongIndex + 1;
     setCurrentSongIndex(newIndex);
-    setIsPlaying(true);
   };
 
   const selectSong = (index: number) => {
