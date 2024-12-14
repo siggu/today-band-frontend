@@ -1,17 +1,26 @@
-import { HStack, VStack, Box, Text, Image, Container } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
-import { getBand } from '../api';
+import { HStack, VStack, Box, Text, Image, Container, Icon } from '@chakra-ui/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getBand, getLikes, postLikes } from '../api';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { TurnTable } from '../components/TurnTable';
 import { IBand } from '@/types';
+import { FaRegStar, FaStar } from 'react-icons/fa';
 
 export default function Band() {
   const { bandId } = useParams();
+  const queryClient = useQueryClient();
   const { data, isLoading } = useQuery<IBand>({
     queryKey: [`${bandId}`],
     queryFn: getBand,
   });
+
+  const { data: likeData, isLoading: isLikeDataLoading } = useQuery({
+    queryKey: ['like'],
+    queryFn: getLikes,
+  });
+
+  const isLiked = bandId && likeData ? likeData.some((like: { id: number }) => like.id === parseInt(bandId)) : false;
 
   const [songs, setSongs] = useState<string[]>([]);
   const [images, setImages] = useState<string[]>([]);
@@ -19,6 +28,28 @@ export default function Band() {
   const members_photos = data?.member_photos.split(',');
   const member_info = data?.member_info.split('/');
   const band_photo = data?.photo ? data.photo.split(',') : [];
+
+  const mutation = useMutation({
+    mutationFn: postLikes,
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['like'],
+        exact: true,
+      });
+    },
+  });
+
+  const handleLike = () => {
+    if (bandId) {
+      mutation.mutate(bandId!);
+    } else {
+      console.log('band ID undefined임');
+    }
+  };
+
+  const refreshPage = (url: string) => {
+    window.location.href = url;
+  };
 
   useEffect(() => {
     if (!isLoading && data) {
@@ -31,9 +62,22 @@ export default function Band() {
     <Container pt={50}>
       <HStack gap={10} display={'flex'} wrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
         <VStack m={10} mb={20} gap={3} alignItems={'flex-start'} w={450} wrap={'wrap'}>
-          <Text fontWeight={'black'} color={'#4882D9'} fontSize={30}>
-            {data?.name}
-          </Text>
+          <HStack>
+            <Text fontWeight={'black'} color={'#4882D9'} fontSize={30}>
+              {data?.name}
+            </Text>
+            <Box onClick={handleLike}>
+              {isLiked ? (
+                <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
+                  <FaStar size={20} color='#0243FF' />
+                </Box>
+              ) : (
+                <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
+                  <FaRegStar size={20} />
+                </Box>
+              )}
+            </Box>
+          </HStack>
           <Box>
             <Image src={band_photo[1]} alt={data?.name}></Image>
           </Box>

@@ -1,9 +1,18 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
 import { Toaster, toaster } from './ui/toaster';
-import { logOut } from '../api';
+import { getLikes, logOut } from '../api';
+import { FaStar } from 'react-icons/fa';
+import { Box, HStack, Text } from '@chakra-ui/react';
+import { PopoverContent, PopoverRoot, PopoverTrigger } from './ui/popover';
+import { Link } from 'react-router-dom';
 
 export default function LogOutDialog() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['like'],
+    queryFn: getLikes,
+  });
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -38,8 +47,26 @@ export default function LogOutDialog() {
 
   return (
     <>
-      <Toaster />
-      <Button onClick={handleLogoutSubmit}>로그아웃</Button>
+      <HStack gap={4}>
+        <Toaster />
+        <PopoverRoot>
+          <PopoverTrigger>
+            <FaStar />
+          </PopoverTrigger>
+          <PopoverContent p={3}>
+            {data?.map((band: any) => (
+              <Link to={`/bands/${band.id}`}>
+                <HStack p={1} justifyContent={'flex-start'} alignItems={'center'}>
+                  <FaStar color='#0243FF' />
+                  <Text fontWeight={'bold'}>{band.name}</Text>
+                </HStack>
+              </Link>
+            ))}
+          </PopoverContent>
+        </PopoverRoot>
+
+        <Button onClick={handleLogoutSubmit}>로그아웃</Button>
+      </HStack>
     </>
   );
 }

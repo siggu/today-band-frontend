@@ -71,3 +71,14 @@ export const userRegister = ({ username, password }: IUsernameLoginVariables) =>
       }
     )
     .then((response) => response.data);
+
+export const getLikes = () => instance.get(`likes/`).then((response) => response.data);
+
+export const postLikes = (bandId: string) =>
+  instance
+    .post(`likes/${bandId}/`, null, {
+      headers: {
+        'X-CSRFToken': Cookie.get('csrftoken') || '',
+      },
+    })
+    .then((response) => response.data);

@@ -15,7 +15,6 @@ import { useColorMode } from './ui/color-mode';
 import { MdDarkMode } from 'react-icons/md';
 import { useQuery } from '@tanstack/react-query';
 import { getBands } from '../api';
-import { Link, useNavigate } from 'react-router-dom';
 import useUser from '../lib/useUser';
 import LoginDialog from './LoginDialog';
 import LogOutDialog from './LogOutDialog';
