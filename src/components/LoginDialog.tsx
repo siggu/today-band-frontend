@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { usernameLogIn } from '../api';
 import { IUsernameLoginVariables } from '../types';
 import { Toaster, toaster } from './ui/toaster';
-import useUser from '../lib/useUser';
+import { Link } from 'react-router-dom';
 
 const floatingStyles = defineStyle({
   pos: 'absolute',
@@ -72,6 +72,10 @@ export default function LoginDialog() {
     mutation.mutate({ username: username, password: password });
   };
 
+  const refreshPage = (url: string) => {
+    window.location.href = url;
+  };
+
   return (
     <DialogRoot>
       <Toaster />
@@ -112,6 +116,9 @@ export default function LoginDialog() {
               </Box>
             </Field.Root>
           </VStack>
+          <Box onClick={() => refreshPage(`/register`)}>
+            <Text>회원가입</Text>
+          </Box>
           <Box typeof='submit' display={'flex'} justifyContent={'flex-end'}>
             <Button onClick={handleLoginSubmit}>로그인</Button>
           </Box>

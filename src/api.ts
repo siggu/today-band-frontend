@@ -58,3 +58,16 @@ export const logOut = () =>
       },
     })
     .then((response) => response.data);
+
+export const userRegister = ({ username, password }: IUsernameLoginVariables) =>
+  instance
+    .post(
+      `/users/sign-up`,
+      { username, password },
+      {
+        headers: {
+          'X-CSRFToken': Cookie.get('csrftoken') || '',
+        },
+      }
+    )
+    .then((response) => response.data);
