@@ -1,17 +1,12 @@
 import Cookie from 'js-cookie';
 import { QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
-import { IUsernameLoginVariables } from './types.d';
+import { IComment, IUsernameLoginVariables } from './types.d';
 
 const instance = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/v1/',
   withCredentials: true,
 });
-
-interface IComment {
-  detail: string;
-  date: string;
-}
 
 export const getBands = () => instance.get('bands/').then((response) => response.data);
 
@@ -30,9 +25,20 @@ export const postComments = ({ detail }: IComment) =>
       {
         headers: {
           'X-CSRFToken': Cookie.get('csrftoken') || '',
+          Authorization: `Bearer ${Cookie.get('authToken') || ''}`,
         },
       }
     )
+    .then((response) => response.data);
+
+export const deleteComments = (commentId: number) =>
+  instance
+    .delete(`comments/${commentId}`, {
+      headers: {
+        'X-CSRFToken': Cookie.get('csrftoken') || '',
+        Authorization: `Bearer ${Cookie.get('authToken') || ''}`,
+      },
+    })
     .then((response) => response.data);
 
 export const getMe = () => instance.get(`users/me`).then((response) => response.data);

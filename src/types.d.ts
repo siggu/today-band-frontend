@@ -22,7 +22,9 @@ interface IGenre {
 
 export interface IComment {
   detail: string;
+  user: string;
   date: string;
+  id: number;
 }
 
 export interface IUsernameLoginVariables {

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Field } from '../components/ui/field';
 import { Button, Container, HStack, Stack, Text, Textarea, VStack } from '@chakra-ui/react';
 import {
@@ -7,10 +7,12 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from '../components/ui/pagination';
-import { getComments, postComments } from '../api';
+import { deleteComments, getComments, postComments } from '../api';
 import { useState } from 'react';
 import { Toaster, toaster } from '../components/ui/toaster';
 import { IComment } from '@/types';
+import Cookie from 'js-cookie';
+import useUser from '../lib/useUser';
 
 export default function Comment() {
   const {
@@ -48,7 +50,7 @@ export default function Comment() {
 
   const [newComment, setNewComment] = useState('');
   const mutation = useMutation({
-    mutationFn: (newComment: { detail: string; date: string }) => postComments(newComment),
+    mutationFn: (newComment: { detail: string; date: string; user: string; id: number }) => postComments(newComment),
     onSuccess: () => {
       toaster.create({
         title: '댓글 등록 성공!',
@@ -67,6 +69,8 @@ export default function Comment() {
     },
   });
 
+  const { userLoading, isLoggedIn, user } = useUser();
+
   const handleCommentSubmit = () => {
     if (!newComment.trim()) {
       toaster.create({
@@ -76,7 +80,38 @@ export default function Comment() {
       });
       return;
     }
-    mutation.mutate({ detail: newComment, date: newComment });
+
+    const id = Number(Cookie.get('id'));
+    mutation.mutate({
+      detail: newComment,
+      user,
+      date: '',
+      id,
+    });
+  };
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (commentId: number) => deleteComments(commentId),
+    onSuccess: () => {
+      toaster.create({
+        title: '댓글이 삭제되었습니다.',
+        type: 'success',
+      });
+      refetch();
+    },
+    onError: (error: any) => {
+      toaster.create({
+        title: error.message,
+        type: 'error',
+        duration: 2000,
+      });
+    },
+  });
+
+  const handleDelete = (commentId: number) => {
+    deleteMutation.mutate(commentId);
   };
 
   return (
@@ -94,9 +129,9 @@ export default function Comment() {
           />
         </Field>
       </VStack>
-      <Text mb={5} fontSize={11} color={{ base: 'red', _dark: 'red.500' }}>
+      {/* <Text mb={5} fontSize={11} color={{ base: 'red', _dark: 'red.500' }}>
         댓글을 한 번 작성하면 삭제할 수 없습니다.
-      </Text>
+      </Text> */}
       <VStack mb={20} alignItems={'self-end'}>
         <Button onClick={handleCommentSubmit}>댓글 등록</Button>
       </VStack>
@@ -105,13 +140,23 @@ export default function Comment() {
         <Stack mb={5}>
           {visibleComments.map((comment, index) =>
             comment !== undefined ? (
-              <HStack justifyContent={'space-between'}>
-                <Text maxW={'2xl'} overflowWrap='break-word' display={'list-item'}>
-                  {comment}
-                </Text>
-                <Text fontSize={13} color={'gray.500'}>
-                  {formatDate(visibleDates[index])}
-                </Text>
+              <HStack mb={3} justifyContent={'space-between'}>
+                <VStack gap={0} alignItems={'flex-start'}>
+                  <Text maxW={'2xl'} overflowWrap='break-word' display={'list-item'}>
+                    {comment}
+                  </Text>
+                  <Text fontSize={12}>{commentData[index].user}</Text>
+                </VStack>
+                <VStack alignItems={'flex-end'}>
+                  <Text fontSize={13} color={'gray.500'}>
+                    {formatDate(visibleDates[index])}
+                  </Text>
+                  {isLoggedIn && commentData[index].user === user.name && (
+                    <Button size='xs' colorScheme='red' onClick={() => handleDelete(commentData[index].id)}>
+                      삭제
+                    </Button>
+                  )}
+                </VStack>
               </HStack>
             ) : null
           )}

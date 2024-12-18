@@ -69,7 +69,7 @@ export default function Band() {
             <Box onClick={handleLike}>
               {isLiked ? (
                 <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
-                  <FaStar size={20} color='#0243FF' />
+                  <FaStar size={20} />
                 </Box>
               ) : (
                 <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
