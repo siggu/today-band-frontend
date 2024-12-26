@@ -29,17 +29,26 @@ export function TurnTable({ songs, images, bandName }: TurnTableProps) {
   const paginatedImages = images.slice(startIndex, endIndex);
   const rotationInterval = useRef<NodeJS.Timeout | null>(null);
 
+  let decodedBandName = '';
+  if (bandName) {
+    const formattedBandName = bandName.replace(/\s+/g, '+');
+    decodedBandName = decodeURIComponent(formattedBandName);
+  }
+
   const initializeAudio = (songName: string) => {
+    const formattedSongName = songName.replace(/\s+/g, '+');
+
     if (audio) {
       audio.pause();
-      audio.src = `/songs/${songName}.mp3`;
+      audio.src = `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/${formattedSongName}.mp3`;
       audio.load();
     } else {
-      const newAudio = new Audio(`/songs/${songName}.mp3`);
+      const newAudio = new Audio(
+        `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/${formattedSongName}.mp3`
+      );
       setAudio(newAudio);
     }
   };
-
   const playAudio = () => {
     if (audio) {
       audio.play().catch((error) => console.error('음악 재생 중 오류 발생', error));
