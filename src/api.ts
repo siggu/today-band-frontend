@@ -5,7 +5,7 @@ import { IComment, IUsernameLoginVariables } from './types.d';
 
 const instance = axios.create({
   baseURL:
-    process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8000/api/v1/' : 'https://today-band.onrender.com/',
+    process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8000/api/v1/' : 'https://backend.today-band.site/',
   withCredentials: true,
 });
 
