@@ -62,9 +62,9 @@ export default function Header() {
         </Button>
       </Box>
 
-      <Box textAlign='center'>
+      <Box textAlign='center' mx='auto' maxW={'200px'}>
         <Box onClick={() => refreshPage(`/`)}>
-          <Text fontSize='30px' fontWeight='bold'>
+          <Text _hover={{ cursor: 'pointer' }} fontSize='30px' fontWeight='bold'>
             오늘의 밴드
           </Text>
         </Box>
@@ -94,7 +94,7 @@ export default function Header() {
                 <AccordionRoot rounded='5px' variant={'enclosed'} size={'lg'} multiple defaultValue={[]}>
                   {classifications.map((cls) => (
                     <AccordionItem key={cls.code} value={cls.code}>
-                      <AccordionItemTrigger>{cls.title}</AccordionItemTrigger>
+                      <AccordionItemTrigger _hover={{ cursor: 'pointer' }}>{cls.title}</AccordionItemTrigger>
                       <AccordionItemContent>
                         {isLoading ? (
                           <Text>Loading...</Text>
@@ -103,7 +103,7 @@ export default function Header() {
                             .filter((band: any) => band.classification === cls.code)
                             .map((band: any) => (
                               <Box key={band.id} marginBottom={4}>
-                                <Box onClick={() => refreshPage(`/bands/${band.id}`)}>
+                                <Box _hover={{ cursor: 'pointer' }} onClick={() => refreshPage(`/bands/${band.id}`)}>
                                   <Text fontWeight={'bold'}>{band.name}</Text>
                                 </Box>
                               </Box>

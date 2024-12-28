@@ -116,7 +116,7 @@ export default function LoginDialog() {
               </Box>
             </Field.Root>
           </VStack>
-          <Box onClick={() => refreshPage(`/register`)}>
+          <Box _hover={{ cursor: 'pointer' }} onClick={() => refreshPage(`/register`)}>
             <Text>회원가입</Text>
           </Box>
           <Box typeof='submit' display={'flex'} justifyContent={'flex-end'}>

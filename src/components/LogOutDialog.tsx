@@ -51,7 +51,9 @@ export default function LogOutDialog() {
         <Toaster />
         <PopoverRoot>
           <PopoverTrigger>
-            <FaStar />
+            <Box _hover={{ cursor: 'pointer' }}>
+              <FaStar />
+            </Box>
           </PopoverTrigger>
           <PopoverContent p={3}>
             {data?.map((band: any) => (

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { TurnTable } from '../components/TurnTable';
 import { IBand } from '@/types';
 import { FaRegStar, FaStar } from 'react-icons/fa';
+import { Tooltip } from '../components/ui/tooltip';
 
 const generateImageUrl = (memberName: string) => {
   return `https://today-band.s3.ap-northeast-2.amazonaws.com/images/${memberName}.jpg`;
@@ -69,13 +70,23 @@ export default function Band() {
             </Text>
             <Box onClick={handleLike}>
               {isLiked ? (
-                <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
-                  <FaStar size={20} />
-                </Box>
+                <Tooltip
+                  showArrow
+                  positioning={{ placement: 'top' }}
+                  openDelay={100}
+                  closeDelay={100}
+                  content='즐겨찾기 삭제'
+                >
+                  <Box _hover={{ cursor: 'pointer' }} onClick={() => refreshPage(`/bands/${bandId}`)}>
+                    <FaStar size={20} />
+                  </Box>
+                </Tooltip>
               ) : (
-                <Box onClick={() => refreshPage(`/bands/${bandId}`)}>
-                  <FaRegStar size={20} />
-                </Box>
+                <Tooltip showArrow content='즐겨찾기 추가'>
+                  <Box _hover={{ cursor: 'pointer' }} onClick={() => refreshPage(`/bands/${bandId}`)}>
+                    <FaRegStar size={20} />
+                  </Box>
+                </Tooltip>
               )}
             </Box>
           </HStack>

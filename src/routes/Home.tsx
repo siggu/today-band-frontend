@@ -98,7 +98,7 @@ export default function Home() {
             <DialogTrigger>
               <HStack>
                 <BsMusicPlayerFill size={'20'} />
-                <Text>노래 듣기</Text>
+                <Text _hover={{ cursor: 'pointer' }}>노래 듣기</Text>
               </HStack>
             </DialogTrigger>
             <DialogContent>
