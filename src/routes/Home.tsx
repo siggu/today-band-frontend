@@ -19,13 +19,11 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [songs, setSongs] = useState<string[]>([]);
-  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (!isLoading && data) {
       const bandForToday = data[getIndexForToday(data.length)];
       setSongs(bandForToday.hit_songs.split(','));
-      setImages(bandForToday.music_photo.split(','));
     }
   }, [data, isLoading]);
 
@@ -103,7 +101,7 @@ export default function Home() {
             </DialogTrigger>
             <DialogContent>
               <DialogBody p={0} m={0}>
-                <TurnTable songs={songs} images={images} bandName={bandForToday.name} />
+                <TurnTable songs={songs} bandName={bandForToday.name} />
               </DialogBody>
             </DialogContent>
           </DialogRoot>

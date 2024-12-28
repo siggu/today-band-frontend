@@ -54,7 +54,6 @@ export default function Band() {
   useEffect(() => {
     if (!isLoading && data) {
       setSongs(data.hit_songs.split(','));
-      setImages(data.music_photo.split(','));
     }
   }, [data, isLoading]);
 
@@ -112,7 +111,7 @@ export default function Band() {
           </HStack>
         </VStack>
         <Box m={10}>
-          <TurnTable songs={songs} images={images} bandName={data?.name} />
+          <TurnTable songs={songs} bandName={data?.name} />
         </Box>
       </HStack>
       <Box mt={20} mx={10}>
