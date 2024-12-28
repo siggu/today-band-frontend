@@ -54,21 +54,21 @@ export const getMe = () => {
     .then((response) => response.data);
 };
 
-export const usernameLogIn = ({ username, password }: IUsernameLoginVariables) => {
-  const token = Cookie.get('token');
-  return instance
+export const usernameLogIn = ({ username, password }: IUsernameLoginVariables) =>
+  instance
     .post(
       `/users/log-in`,
       { username, password },
       {
         headers: {
-          Authorization: `Token ${token}`,
           'X-CSRFToken': Cookie.get('csrftoken') || '',
         },
       }
     )
-    .then((response) => response.data);
-};
+    .then((response) => {
+      Cookie.set('token', response.data.token);
+      return response.data;
+    });
 
 export const logOut = () =>
   instance
