@@ -42,20 +42,33 @@ export const deleteComments = (commentId: number) =>
     })
     .then((response) => response.data);
 
-export const getMe = () => instance.get(`users/me`).then((response) => response.data);
+export const getMe = () => {
+  const token = Cookie.get('token');
+  return instance
+    .get('users/me', {
+      headers: {
+        Authorization: `Token ${token}`,
+        'X-CSRFToken': Cookie.get('csrftoken') || '',
+      },
+    })
+    .then((response) => response.data);
+};
 
-export const usernameLogIn = ({ username, password }: IUsernameLoginVariables) =>
-  instance
+export const usernameLogIn = ({ username, password }: IUsernameLoginVariables) => {
+  const token = Cookie.get('token');
+  return instance
     .post(
       `/users/log-in`,
       { username, password },
       {
         headers: {
+          Authorization: `Token ${token}`,
           'X-CSRFToken': Cookie.get('csrftoken') || '',
         },
       }
     )
     .then((response) => response.data);
+};
 
 export const logOut = () =>
   instance
