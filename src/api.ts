@@ -31,10 +31,7 @@ export const postComments = ({ detail }: IComment) => {
         },
       }
     )
-    .then((response) => {
-      Cookie.set('token', response.data.token);
-      return response.data;
-    });
+    .then((response) => response.data);
 };
 
 export const deleteComments = (commentId: number) => {
