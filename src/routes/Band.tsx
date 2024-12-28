@@ -30,7 +30,6 @@ export default function Band() {
   const members = data?.members.split(',');
   const members_photos = members?.map((memberName) => generateImageUrl(memberName.trim()));
   const member_info = data?.member_info.split('/');
-  const band_photo = data?.photo ? data.photo.split(',') : [];
 
   const mutation = useMutation({
     mutationFn: postLikes,

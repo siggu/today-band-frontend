@@ -42,7 +42,6 @@ export default function Home() {
   }
 
   const bandForToday = data[getIndexForToday(data.length)];
-  const band_photo = bandForToday.photo.split(',');
 
   return (
     <Container
