@@ -70,17 +70,20 @@ export const usernameLogIn = ({ username, password }: IUsernameLoginVariables) =
       return response.data;
     });
 
-export const logOut = () =>
-  instance
+export const logOut = () => {
+  const token = Cookie.get('token');
+  return instance
     .post(`/users/log-out`, null, {
       headers: {
+        Authorization: `Token ${token}`,
         'X-CSRFToken': Cookie.get('csrftoken') || '',
       },
     })
     .then((response) => {
-      Cookie.set('token', response.data.token);
+      Cookie.remove('token');
       return response.data;
     });
+};
 
 export const userRegister = ({ username, password }: IUsernameLoginVariables) =>
   instance
@@ -107,14 +110,14 @@ export const getLikes = () => {
     .then((response) => response.data);
 };
 
-export const postLikes = (bandId: string) =>
-  instance
+export const postLikes = (bandId: string) => {
+  const token = Cookie.get('token');
+  return instance
     .post(`likes/${bandId}/`, null, {
       headers: {
+        Authorization: `Token ${token}`,
         'X-CSRFToken': Cookie.get('csrftoken') || '',
       },
     })
-    .then((response) => {
-      Cookie.set('token', response.data.token);
-      return response.data;
-    });
+    .then((response) => response.data);
+};
