@@ -20,7 +20,7 @@ export const getComments = () => instance.get('comments/').then((response) => re
 
 export const postComments = ({ detail }: IComment) => {
   const token = Cookie.get('token');
-  instance
+  return instance
     .post(
       'comments/',
       { detail },
@@ -39,7 +39,7 @@ export const postComments = ({ detail }: IComment) => {
 
 export const deleteComments = (commentId: number) => {
   const token = Cookie.get('token');
-  instance
+  return instance
     .delete(`comments/${commentId}`, {
       headers: {
         'X-CSRFToken': Cookie.get('csrftoken') || '',

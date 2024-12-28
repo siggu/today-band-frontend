@@ -16,13 +16,12 @@ import useUser from '../lib/useUser';
 
 export default function Comment() {
   const {
-    data: commentData,
+    data: commentData = [],
     isLoading: isCommentDataLoading,
     refetch,
   } = useQuery<IComment[]>({
     queryKey: ['comment'],
     queryFn: getComments,
-    initialData: [],
   });
 
   const deleteMutation = useMutation({
@@ -43,30 +42,6 @@ export default function Comment() {
     },
   });
 
-  const pageSize = 5;
-  const count: number = commentData!.length;
-  const comments = new Array(count).fill(0).map((_, index) => commentData![index]?.detail);
-  const dates = new Array(count).fill(0).map((_, index) => commentData![index]?.date);
-
-  const [page, setPage] = useState(1);
-  const startRange = (page - 1) * pageSize;
-  const endRange = startRange + pageSize;
-  const visibleComments = comments.slice(startRange, endRange);
-  const visibleDates = dates.slice(startRange, endRange);
-
-  const formatDate = (isoDate: string): string => {
-    const date = new Date(isoDate);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-  };
-
-  const [newComment, setNewComment] = useState('');
   const mutation = useMutation({
     mutationFn: (newComment: { detail: string; date: string; user: string; id: number }) => postComments(newComment),
     onSuccess: () => {
@@ -87,11 +62,31 @@ export default function Comment() {
     },
   });
 
+  const pageSize = 5;
+  const count: number = commentData!.length;
+  const comments = new Array(count).fill(0).map((_, index) => commentData![index]?.detail);
+  const dates = new Array(count).fill(0).map((_, index) => commentData![index]?.date);
+
+  const [page, setPage] = useState(1);
+  const startRange = (page - 1) * pageSize;
+  const endRange = startRange + pageSize;
+  const visibleComments = comments.slice(startRange, endRange);
+  const visibleDates = dates.slice(startRange, endRange);
+
+  const [newComment, setNewComment] = useState('');
   const { userLoading, isLoggedIn, user } = useUser();
 
-  if (isCommentDataLoading || userLoading) {
-    return <div>Loading...</div>;
-  }
+  const formatDate = (isoDate: string): string => {
+    const date = new Date(isoDate);
+    return date.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
 
   const handleCommentSubmit = () => {
     if (!newComment.trim()) {
