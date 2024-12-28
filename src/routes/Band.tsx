@@ -7,6 +7,10 @@ import { TurnTable } from '../components/TurnTable';
 import { IBand } from '@/types';
 import { FaRegStar, FaStar } from 'react-icons/fa';
 
+const generateImageUrl = (memberName: string) => {
+  return `https://today-band.s3.ap-northeast-2.amazonaws.com/images/${memberName}.jpg`;
+};
+
 export default function Band() {
   const { bandId } = useParams();
   const queryClient = useQueryClient();
@@ -23,9 +27,8 @@ export default function Band() {
   const isLiked = bandId && likeData ? likeData.some((like: { id: number }) => like.id === parseInt(bandId)) : false;
 
   const [songs, setSongs] = useState<string[]>([]);
-  const [images, setImages] = useState<string[]>([]);
   const members = data?.members.split(',');
-  const members_photos = data?.member_photos.split(',');
+  const members_photos = members?.map((memberName) => generateImageUrl(memberName.trim()));
   const member_info = data?.member_info.split('/');
   const band_photo = data?.photo ? data.photo.split(',') : [];
 
