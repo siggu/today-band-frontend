@@ -25,6 +25,24 @@ export default function Comment() {
     initialData: [],
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (commentId: number) => deleteComments(commentId),
+    onSuccess: () => {
+      toaster.create({
+        title: '댓글이 삭제되었습니다.',
+        type: 'success',
+      });
+      refetch();
+    },
+    onError: (error: any) => {
+      toaster.create({
+        title: error.message,
+        type: 'error',
+        duration: 2000,
+      });
+    },
+  });
+
   const pageSize = 5;
   const count: number = commentData!.length;
   const comments = new Array(count).fill(0).map((_, index) => commentData![index]?.detail);
@@ -93,24 +111,6 @@ export default function Comment() {
       id,
     });
   };
-
-  const deleteMutation = useMutation({
-    mutationFn: (commentId: number) => deleteComments(commentId),
-    onSuccess: () => {
-      toaster.create({
-        title: '댓글이 삭제되었습니다.',
-        type: 'success',
-      });
-      refetch();
-    },
-    onError: (error: any) => {
-      toaster.create({
-        title: error.message,
-        type: 'error',
-        duration: 2000,
-      });
-    },
-  });
 
   const handleDelete = (commentId: number) => {
     deleteMutation.mutate(commentId);
