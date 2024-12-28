@@ -18,7 +18,8 @@ export const getBand = ({ queryKey }: QueryFunctionContext) => {
 
 export const getComments = () => instance.get('comments/').then((response) => response.data);
 
-export const postComments = ({ detail }: IComment) =>
+export const postComments = ({ detail }: IComment) => {
+  const token = Cookie.get('token');
   instance
     .post(
       'comments/',
@@ -26,21 +27,27 @@ export const postComments = ({ detail }: IComment) =>
       {
         headers: {
           'X-CSRFToken': Cookie.get('csrftoken') || '',
-          Authorization: `Bearer ${Cookie.get('authToken') || ''}`,
+          Authorization: `Token ${token}`,
         },
       }
     )
-    .then((response) => response.data);
+    .then((response) => {
+      Cookie.set('token', response.data.token);
+      return response.data;
+    });
+};
 
-export const deleteComments = (commentId: number) =>
+export const deleteComments = (commentId: number) => {
+  const token = Cookie.get('token');
   instance
     .delete(`comments/${commentId}`, {
       headers: {
         'X-CSRFToken': Cookie.get('csrftoken') || '',
-        Authorization: `Bearer ${Cookie.get('authToken') || ''}`,
+        Authorization: `Token ${token}`,
       },
     })
     .then((response) => response.data);
+};
 
 export const getMe = () => {
   const token = Cookie.get('token');
