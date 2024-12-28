@@ -37,14 +37,13 @@ export function TurnTable({ songs, images, bandName }: TurnTableProps) {
 
   const initializeAudio = (songName: string) => {
     const formattedSongName = songName.replace(/\s+/g, '+');
-
     if (audio) {
       audio.pause();
-      audio.src = `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/${formattedSongName}.mp3`;
+      audio.src = `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/songs/${formattedSongName}.mp3`;
       audio.load();
     } else {
       const newAudio = new Audio(
-        `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/${formattedSongName}.mp3`
+        `https://today-band.s3.ap-northeast-2.amazonaws.com/${decodedBandName}/songs/${formattedSongName}.mp3`
       );
       setAudio(newAudio);
     }
