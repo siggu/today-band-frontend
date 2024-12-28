@@ -55,7 +55,10 @@ export default function Home() {
       <HStack gap={10} mt={20} mb={10} flexWrap={'wrap'} justifyContent={'center'} alignItems={'center'}>
         <VStack justifyContent={'center'} p={30}>
           <Box>
-            <Image h={550} src={band_photo[0]} alt={bandForToday.name} />
+            <Image
+              h={550}
+              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/images/${bandForToday.name}_1.jpg`}
+            />
           </Box>
         </VStack>
         <VStack gap={5} justifyContent={'center'} alignItems={'flex-start'} p={30}>

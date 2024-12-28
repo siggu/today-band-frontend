@@ -81,7 +81,10 @@ export default function Band() {
             </Box>
           </HStack>
           <Box>
-            <Image src={band_photo[1]} alt={data?.name}></Image>
+            <Image
+              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/images/${data?.name}_2.jpg`}
+              alt={data?.name}
+            />
           </Box>
           <Box p={5} layerStyle={'fill.surface'}>
             <Text fontWeight={'extrabold'}>{data?.introduction}</Text>
