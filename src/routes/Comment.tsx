@@ -71,6 +71,10 @@ export default function Comment() {
 
   const { userLoading, isLoggedIn, user } = useUser();
 
+  if (isCommentDataLoading || userLoading) {
+    return <div>Loading...</div>;
+  }
+
   const handleCommentSubmit = () => {
     if (!newComment.trim()) {
       toaster.create({
@@ -89,8 +93,6 @@ export default function Comment() {
       id,
     });
   };
-
-  const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
     mutationFn: (commentId: number) => deleteComments(commentId),
@@ -151,8 +153,8 @@ export default function Comment() {
                   <Text fontSize={13} color={'gray.500'}>
                     {formatDate(visibleDates[index])}
                   </Text>
-                  {isLoggedIn && commentData[index].user === user.name && (
-                    <Button size='xs' colorScheme='red' onClick={() => handleDelete(commentData[index].id)}>
+                  {isLoggedIn && user?.name && commentData[index]?.user === user.name && (
+                    <Button size='xs' colorScheme='red' onClick={() => handleDelete(commentData[index]?.id)}>
                       삭제
                     </Button>
                   )}
