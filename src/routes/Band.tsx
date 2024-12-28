@@ -82,7 +82,13 @@ export default function Band() {
                   </Box>
                 </Tooltip>
               ) : (
-                <Tooltip showArrow content='즐겨찾기 추가'>
+                <Tooltip
+                  showArrow
+                  positioning={{ placement: 'top' }}
+                  openDelay={100}
+                  closeDelay={100}
+                  content='즐겨찾기 추가'
+                >
                   <Box _hover={{ cursor: 'pointer' }} onClick={() => refreshPage(`/bands/${bandId}`)}>
                     <FaRegStar size={20} />
                   </Box>
