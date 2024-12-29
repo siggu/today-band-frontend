@@ -59,7 +59,7 @@ export default function LogOutDialog() {
             {data?.map((band: any) => (
               <Link to={`/bands/${band.id}`}>
                 <HStack p={1} justifyContent={'flex-start'} alignItems={'center'}>
-                  <FaStar color='#0243FF' />
+                  <FaStar color='#4882D9' />
                   <Text fontWeight={'bold'}>{band.name}</Text>
                 </HStack>
               </Link>
