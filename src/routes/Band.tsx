@@ -7,12 +7,14 @@ import { TurnTable } from '../components/TurnTable';
 import { IBand } from '@/types';
 import { FaRegStar, FaStar } from 'react-icons/fa';
 import { Tooltip } from '../components/ui/tooltip';
+import useUser from '@/lib/useUser';
 
 const generateImageUrl = (memberName: string) => {
   return `https://today-band.s3.ap-northeast-2.amazonaws.com/images/${memberName}.jpg`;
 };
 
 export default function Band() {
+  const { userLoading, isLoggedIn, user } = useUser();
   const { bandId } = useParams();
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery<IBand>({
@@ -69,7 +71,7 @@ export default function Band() {
               {data?.name}
             </Text>
             <Box onClick={handleLike}>
-              {isLiked ? (
+              {isLoggedIn && isLiked ? (
                 <Tooltip
                   showArrow
                   positioning={{ placement: 'top' }}
