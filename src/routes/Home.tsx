@@ -56,7 +56,7 @@ export default function Home() {
           <Box>
             <Image
               h={550}
-              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/images/${bandForToday.name}_1.jpg`}
+              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/${bandForToday.name}/images/${bandForToday.name}_1.jpg`}
             />
           </Box>
         </VStack>

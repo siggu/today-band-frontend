@@ -14,7 +14,7 @@ interface TurnTableProps {
 
 const generateImageUrl = (songName: string, bandName: string) => {
   const formattedSongName = songName.replace(/\s+/g, '+');
-  return `https://today-band.s3.ap-northeast-2.amazonaws.com/images/${formattedSongName}.jpg`;
+  return `https://today-band.s3.ap-northeast-2.amazonaws.com/${bandName}/images/${formattedSongName}.jpg`;
 };
 
 export function TurnTable({ songs, bandName }: TurnTableProps) {
@@ -38,10 +38,12 @@ export function TurnTable({ songs, bandName }: TurnTableProps) {
     const formattedSongName = songName.replace(/\s+/g, '+');
     if (audio) {
       audio.pause();
-      audio.src = `https://today-band.s3.ap-northeast-2.amazonaws.com/songs/${formattedSongName}.mp3`;
+      audio.src = `https://today-band.s3.ap-northeast-2.amazonaws.com/${bandName}/songs/${formattedSongName}.mp3`;
       audio.load();
     } else {
-      const newAudio = new Audio(`https://today-band.s3.ap-northeast-2.amazonaws.com/songs/${formattedSongName}.mp3`);
+      const newAudio = new Audio(
+        `https://today-band.s3.ap-northeast-2.amazonaws.com/${bandName}/songs/${formattedSongName}.mp3`
+      );
       setAudio(newAudio);
     }
   };

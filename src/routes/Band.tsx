@@ -9,8 +9,8 @@ import { FaRegStar, FaStar } from 'react-icons/fa';
 import { Tooltip } from '../components/ui/tooltip';
 import useUser from '../lib/useUser';
 
-const generateImageUrl = (memberName: string) => {
-  return `https://today-band.s3.ap-northeast-2.amazonaws.com/images/${memberName}.jpg`;
+const generateImageUrl = (memberName: string, bandName: string) => {
+  return `https://today-band.s3.ap-northeast-2.amazonaws.com/${bandName}/images/${memberName}.jpg`;
 };
 
 export default function Band() {
@@ -31,7 +31,7 @@ export default function Band() {
 
   const [songs, setSongs] = useState<string[]>([]);
   const members = data?.members.split(',');
-  const members_photos = members?.map((memberName) => generateImageUrl(memberName.trim()));
+  const members_photos = members?.map((memberName) => generateImageUrl(memberName.trim(), data?.name || ''));
   const member_info = data?.member_info.split('/');
 
   const mutation = useMutation({
@@ -100,7 +100,7 @@ export default function Band() {
           </HStack>
           <Box>
             <Image
-              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/images/${data?.name}_2.jpg`}
+              src={`https://today-band.s3.ap-northeast-2.amazonaws.com/${data?.name}/images/${data?.name}_2.jpg`}
               alt={data?.name}
             />
           </Box>
